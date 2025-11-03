@@ -1,0 +1,25 @@
+# Base RAG Framework - 依赖文件
+
+# 核心框架
+langchain-community>=0.3.31
+langchain-openai>=0.3.35
+pyyaml>=6.0
+
+# Web框架
+flask>=3.0.0
+flask-cors>=6.0.1
+
+# 日志
+loguru>=0.7.3
+
+# 数据库和向量存储
+pymilvus>=2.6.2
+psycopg2-binary>=2.9.9  # PostgreSQL 驱动
+
+# 工具库
+rich>=14.2.0
+httpx[socks]>=0.28.1
+
+# 可选依赖（根据需要启用）
+# python-dotenv>=1.0.0  # 环境变量管理
+# requests>=2.31.0      # HTTP请求

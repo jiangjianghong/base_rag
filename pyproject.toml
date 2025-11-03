@@ -1,0 +1,19 @@
+[project]
+name = "base-rag"
+version = "0.1.0"
+description = "jiangxihong/base-rag"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "langchain-community>=0.3.31",
+    "langchain-openai>=0.3.35",
+    "pyyaml>=6.0",
+    "flask>=3.0.0",
+    "loguru>=0.7.3",
+    "pymilvus>=2.6.2",
+    "pymysql>=1.1.2",
+    "rich>=14.2.0",
+    "httpx[socks]>=0.28.1",
+    "flask-cors>=6.0.1",
+    "psycopg2>=2.9.11",
+]

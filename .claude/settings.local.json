@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /B \"c:\\Users\\19404\\Desktop\\base_rag\")",
+      "Bash(mkdir -p core parsersimplementations retrieverimplementations)",
+      "Bash(dir \"C:\\Users\\19404\\Desktop\\base_rag\\parsers\\implementations\")",
+      "Bash(dir \"C:\\Users\\19404\\Desktop\\base_rag\\retriever\\implementations\")",
+      "Bash(move bluepiint blueprint_new)",
+      "Bash(python -c \"from api import main_bp; print(''Import successful'')\")",
+      "Bash(test -f .gitignore)",
+      "Bash(python -c \"from api import main_bp, base_bp, init_rag_engine; print(''✓ API imports successful'')\")",
+      "Bash(python -c \"from api import main_bp, base_bp, init_rag_engine; from core import get_rag_engine, HistoryManager; from config import get_robot_config; print(''''Imports OK'''')\")",
+      "Bash(tree /F /A)",
+      "Bash(dir /S /B)",
+      "Bash(for file in *.txt)",
+      "Bash(do mv \"$file\" \"$file%.txt.md\")",
+      "Bash(done)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

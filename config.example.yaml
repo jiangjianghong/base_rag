@@ -1,0 +1,120 @@
+# LLM 模型配置
+llm:
+  api_key: "your-api-key-here"  # 请替换为你的 API Key
+  base_url: "https://api.openai.com/v1"  # OpenAI 兼容的 API 地址
+  model: "gpt-3.5-turbo"  # 模型名称
+  temperature: 0.5
+  max_tokens: 8000
+  extra_body:
+    enable_thinking: false
+    # chat_template_kwargs: {"enable_thinking": false}
+
+
+# Embedding 模型配置  type可选值: "openai" (OpenAI兼容格式) 或 "tei" (原生TEI格式).
+embedding:
+  api_key: "your-api-key-here"  # 请替换为你的 API Key（TEI 类型可为空）
+  base_url: "http://localhost:8080"  # Embedding 服务地址
+  model: "text-embedding-ada-002"  # 模型名称
+  type: "openai"  # 可选值: "openai" 或 "tei"
+  vector_dim: 1536  # 向量维度（根据实际模型调整）
+
+
+milvus:
+  host: "localhost"  # Milvus 服务器地址
+  port: 19530  # Milvus 端口
+  user: "root"  # Milvus 用户名
+  password: "your-password-here"  # 请替换为你的密码
+
+# PostgreSQL 配置（用于历史记录持久化）
+postgresql:
+  host: "localhost"  # PostgreSQL 服务器地址
+  port: 5432
+  user: "postgres"  # PostgreSQL 用户名
+  password: "your-password-here"  # 请替换为你的密码
+  database: "base_rag"  # 数据库名称
+  schema: "public"  # Schema 名称
+
+# 检索配置（全局默认值）
+# 各检索策略可在 retriever_strategies 中覆盖这些参数
+retriever:
+  robot:
+    top_k: 5
+    min_score: 0.5
+    embedding_type: "embedding_all"
+    metric_type: "COSINE"
+    nprobe: 10
+
+# 机器人配置（动态配置）
+# 每个机器人定义了提示词模板和检索策略
+# 新增机器人时只需在此添加配置，无需修改代码
+#
+# 配置项说明：
+#   name: 机器人唯一标识符
+#   description: 机器人描述
+#   prompt_template: 提示词模板文件名（在 prompt/templates/ 目录下）
+#   retriever_strategy: 检索策略名称（在 retriever_strategies 中定义，null 表示不使用检索）
+#   enabled: 是否启用该机器人
+#   default_config: 默认行为配置（可选，API 调用时可覆盖）
+#     - structured_output: 是否默认返回结构化 JSON 输出（默认 false）
+#     - streaming: 是否默认使用流式输出（默认 false）
+#     - use_history: 是否默认使用历史记录（默认 true）
+#     - temperature: 默认温度参数（可选，不设置则使用全局 llm.temperature）
+robots:
+  - name: "default"
+    description: "默认通用助手"
+    prompt_template: "default"
+    retriever_strategy: null  # 不使用检索
+    enabled: true
+    default_config:
+      structured_output: false
+      streaming: false
+      use_history: true
+
+
+  - name: "test"
+    description: "测试机器人"
+    prompt_template: "test"
+    retriever_strategy: null
+    enabled: true
+    default_config:
+      structured_output: false
+      streaming: false
+      use_history: true
+
+  - name: "test1"
+    description: "测试机器人1（结构化输出）"
+    prompt_template: "test1"
+    retriever_strategy: null
+    enabled: true
+    default_config:
+      structured_output: true
+      streaming: false
+      use_history: false
+
+  - name: "test_q"
+    description: "测试检索机器人"
+    prompt_template: "test_q"
+    retriever_strategy: "test"
+    enabled: true
+    default_config:
+      structured_output: false
+      streaming: false
+      use_history: true
+
+# 检索策略配置
+# 定义不同的检索策略及其参数
+retriever_strategies:
+  test:
+    type: "mock"  # 模拟测试检索
+    description: "测试用的模拟检索"
+
+  qa_robot:
+    type: "qa_vector"  # 问答向量检索
+    description: "基于问答向量库的检索"
+    collection: "qa_vectors"
+    params:
+      top_k: 5
+      min_score: 0.5
+      embedding_type: "embedding_all"
+      metric_type: "COSINE"
+      nprobe: 10
