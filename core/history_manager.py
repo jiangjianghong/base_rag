@@ -3,8 +3,10 @@
 负责管理对话历史记录（使用 PostgreSQL 持久化存储）
 """
 from typing import Dict, List, Optional
-from langchain_community.chat_message_histories import PostgresChatMessageHistory
+from langchain_postgres import PostgresChatMessageHistory
 from loguru import logger
+import psycopg
+from psycopg.rows import dict_row
 
 
 class HistoryManager:
@@ -17,11 +19,15 @@ class HistoryManager:
         # 获取 PostgreSQL 配置
         pg_config = get_postgresql_config()
 
-        # 构建连接字符串
+        # 构建连接字符串（用于直接操作数据库）
         self.connection_string = (
             f"postgresql://{pg_config['user']}:{pg_config['password']}"
             f"@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
         )
+
+        # 保存配置，用于创建连接
+        self.pg_config = pg_config
+        self.table_name = "message_store"
 
         logger.debug(f"历史记录管理器初始化完成，使用 PostgreSQL: {pg_config['host']}:{pg_config['port']}/{pg_config['database']}")
 
@@ -30,15 +36,21 @@ class HistoryManager:
         获取或创建指定会话的历史记录
 
         Args:
-            session_id: 会话ID
+            session_id: 会话ID（UUID 格式）
 
         Returns:
             PostgresChatMessageHistory: 会话历史记录对象（自动持久化到数据库）
         """
         logger.debug(f"获取会话历史: {session_id}")
+
+        # 创建 psycopg 连接
+        conn = psycopg.connect(self.connection_string)
+
+        # 使用新版 API：位置参数传递 table_name 和 session_id
         return PostgresChatMessageHistory(
-            connection_string=self.connection_string,
-            session_id=session_id
+            self.table_name,
+            session_id,
+            sync_connection=conn
         )
 
     def get_history_messages(self, session_id: str) -> List[dict]:

@@ -27,9 +27,7 @@ def create_app():
     test_config("llm")
     test_config("embedding")
     test_config("milvus")
-    logger.warning("数据库需要时再测试")
-    # 需要时再开
-    #test_config("mysql")
+    test_config("postgresql")
 
     # 初始化RAG引擎
     with app.app_context():
