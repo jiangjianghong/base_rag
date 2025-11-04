@@ -3,8 +3,7 @@
 PostgreSQL 数据库初始化脚本
 用于创建历史记录表结构
 """
-import psycopg2
-from psycopg2 import sql
+import psycopg
 from config.config import get_postgresql_config
 from rich.console import Console
 from rich.panel import Panel
@@ -22,14 +21,14 @@ def init_database():
 
         console.print(f"[cyan]连接到数据库: {pg_config['host']}:{pg_config['port']}/{pg_config['database']}[/cyan]")
 
-        # 建立连接
-        connection = psycopg2.connect(
-            host=pg_config["host"],
-            port=pg_config["port"],
-            user=pg_config["user"],
-            password=pg_config["password"],
-            database=pg_config["database"]
+        # 构建连接字符串
+        connection_string = (
+            f"postgresql://{pg_config['user']}:{pg_config['password']}"
+            f"@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
         )
+
+        # 建立连接
+        connection = psycopg.connect(connection_string)
         connection.autocommit = True
 
         with connection.cursor() as cursor:
@@ -39,7 +38,7 @@ def init_database():
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS message_store (
                 id SERIAL PRIMARY KEY,
-                session_id TEXT NOT NULL,
+                session_id UUID NOT NULL,
                 message JSONB NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -78,7 +77,7 @@ def init_database():
         console.print("\n[bold green]✅ 数据库初始化完成！[/bold green]")
         console.print("\n[cyan]提示：现在可以运行应用程序，历史记录将自动持久化到 PostgreSQL[/cyan]")
 
-    except psycopg2.Error as e:
+    except psycopg.Error as e:
         console.print(f"\n[bold red]❌ 数据库错误: {e}[/bold red]")
         console.print("\n[yellow]请检查：[/yellow]")
         console.print("1. PostgreSQL 服务是否运行")
@@ -100,13 +99,13 @@ def check_database():
     try:
         pg_config = get_postgresql_config()
 
-        connection = psycopg2.connect(
-            host=pg_config["host"],
-            port=pg_config["port"],
-            user=pg_config["user"],
-            password=pg_config["password"],
-            database=pg_config["database"]
+        # 构建连接字符串
+        connection_string = (
+            f"postgresql://{pg_config['user']}:{pg_config['password']}"
+            f"@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
         )
+
+        connection = psycopg.connect(connection_string)
 
         with connection.cursor() as cursor:
             # 检查表是否存在
@@ -158,13 +157,13 @@ def drop_table():
     try:
         pg_config = get_postgresql_config()
 
-        connection = psycopg2.connect(
-            host=pg_config["host"],
-            port=pg_config["port"],
-            user=pg_config["user"],
-            password=pg_config["password"],
-            database=pg_config["database"]
+        # 构建连接字符串
+        connection_string = (
+            f"postgresql://{pg_config['user']}:{pg_config['password']}"
+            f"@{pg_config['host']}:{pg_config['port']}/{pg_config['database']}"
         )
+
+        connection = psycopg.connect(connection_string)
         connection.autocommit = True
 
         with connection.cursor() as cursor:

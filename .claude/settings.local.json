@@ -1,10 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(uv sync)",
-      "Bash(python -c \"from langchain_postgres import PostgresChatMessageHistory; help(PostgresChatMessageHistory.__init__)\")",
-      "Bash(uv run python -c \"from langchain_postgres import PostgresChatMessageHistory; import inspect; print(inspect.signature(PostgresChatMessageHistory.__init__))\")",
-      "Bash(uv run python -c \"from core.history_manager import HistoryManager; manager = HistoryManager(); history = manager.get_session_history(''test_001''); print(''✅ 创建成功'')\")"
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

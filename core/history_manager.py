@@ -7,6 +7,7 @@ from langchain_postgres import PostgresChatMessageHistory
 from loguru import logger
 import psycopg
 from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 
 class HistoryManager:
@@ -29,6 +30,14 @@ class HistoryManager:
         self.pg_config = pg_config
         self.table_name = "message_store"
 
+        # 创建连接池 (min_size=1, max_size=10)
+        self.pool = ConnectionPool(
+            self.connection_string,
+            min_size=1,
+            max_size=10,
+            open=True
+        )
+
         logger.debug(f"历史记录管理器初始化完成，使用 PostgreSQL: {pg_config['host']}:{pg_config['port']}/{pg_config['database']}")
 
     def get_session_history(self, session_id: str) -> PostgresChatMessageHistory:
@@ -43,8 +52,8 @@ class HistoryManager:
         """
         logger.debug(f"获取会话历史: {session_id}")
 
-        # 创建 psycopg 连接
-        conn = psycopg.connect(self.connection_string)
+        # 从连接池获取连接
+        conn = self.pool.getconn()
 
         # 使用新版 API：位置参数传递 table_name 和 session_id
         return PostgresChatMessageHistory(
